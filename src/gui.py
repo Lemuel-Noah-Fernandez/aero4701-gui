@@ -52,7 +52,7 @@ class DataDisplay(FloatLayout):
             'misc_data.json': None
         }
 
-        data_dir = 'GUI/data'
+        data_dir = '../data'
         for file_name in data_files.keys():
             file_path = os.path.join(data_dir, file_name)
             try:

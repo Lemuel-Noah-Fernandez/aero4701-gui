@@ -42,5 +42,126 @@
         "debris_diameter": 7.0,
         "time_of_detection": 789,
         "object_count": 42
+    },
+    {
+        "debris_position_x": 2.0,
+        "debris_position_y": 2.0,
+        "debris_position_z": 3.0,
+        "debris_velocity_x": 0.5,
+        "debris_velocity_y": 0.6000000238418579,
+        "debris_velocity_z": 0.699999988079071,
+        "debris_diameter": 0.4000000059604645,
+        "time_of_detection": 1234567890,
+        "object_count": 5
+    },
+    {
+        "debris_position_x": 2.0,
+        "debris_position_y": 2.0,
+        "debris_position_z": 3.0,
+        "debris_velocity_x": 0.5,
+        "debris_velocity_y": 0.6000000238418579,
+        "debris_velocity_z": 0.699999988079071,
+        "debris_diameter": 0.4000000059604645,
+        "time_of_detection": 1234567890,
+        "object_count": 5
+    },
+    {
+        "debris_position_x": 2.0,
+        "debris_position_y": 2.0,
+        "debris_position_z": 3.0,
+        "debris_velocity_x": 0.5,
+        "debris_velocity_y": 0.6000000238418579,
+        "debris_velocity_z": 0.699999988079071,
+        "debris_diameter": 0.4000000059604645,
+        "time_of_detection": 1234567890,
+        "object_count": 8
+    },
+    {
+        "debris_position_x": 2.0,
+        "debris_position_y": 2.0,
+        "debris_position_z": 3.0,
+        "debris_velocity_x": 0.5,
+        "debris_velocity_y": 0.6000000238418579,
+        "debris_velocity_z": 0.699999988079071,
+        "debris_diameter": 0.4000000059604645,
+        "time_of_detection": 1234567890,
+        "object_count": 6
+    },
+    {
+        "debris_position_x": 2.0,
+        "debris_position_y": 2.0,
+        "debris_position_z": 3.0,
+        "debris_velocity_x": 0.5,
+        "debris_velocity_y": 0.6000000238418579,
+        "debris_velocity_z": 0.699999988079071,
+        "debris_diameter": 0.4000000059604645,
+        "time_of_detection": 1234567890,
+        "object_count": 4
+    },
+    {
+        "debris_position_x": 2.0,
+        "debris_position_y": 2.0,
+        "debris_position_z": 3.0,
+        "debris_velocity_x": 0.5,
+        "debris_velocity_y": 0.6000000238418579,
+        "debris_velocity_z": 0.699999988079071,
+        "debris_diameter": 0.4000000059604645,
+        "time_of_detection": 1234567890,
+        "object_count": 2
+    },
+    {
+        "debris_position_x": 2.0,
+        "debris_position_y": 2.0,
+        "debris_position_z": 3.0,
+        "debris_velocity_x": 0.5,
+        "debris_velocity_y": 0.6000000238418579,
+        "debris_velocity_z": 0.699999988079071,
+        "debris_diameter": 0.4000000059604645,
+        "time_of_detection": 1234567890,
+        "object_count": 3
+    },
+    {
+        "debris_position_x": 2.0,
+        "debris_position_y": 2.0,
+        "debris_position_z": 3.0,
+        "debris_velocity_x": 0.5,
+        "debris_velocity_y": 0.6000000238418579,
+        "debris_velocity_z": 0.699999988079071,
+        "debris_diameter": 0.4000000059604645,
+        "time_of_detection": 1234567890,
+        "object_count": 5
+    },
+    {
+        "debris_position_x": 2.0,
+        "debris_position_y": 2.0,
+        "debris_position_z": 3.0,
+        "debris_velocity_x": 0.5,
+        "debris_velocity_y": 0.6000000238418579,
+        "debris_velocity_z": 0.699999988079071,
+        "debris_diameter": 0.4000000059604645,
+        "time_of_detection": 1234567890,
+        "object_count": 3
+    },
+    {
+        "debris_position_x": 2.0,
+        "debris_position_y": 2.0,
+        "debris_position_z": 3.0,
+        "debris_velocity_x": 0.5,
+        "debris_velocity_y": 0.6000000238418579,
+        "debris_velocity_z": 0.699999988079071,
+        "debris_diameter": 0.4000000059604645,
+        "time_of_detection": 1234567890,
+        "object_count": 5
+    },
+    {
+        "debris_position_x": 2.0,
+        "debris_position_y": 2.0,
+        "debris_position_z": 3.0,
+        "debris_velocity_x": 0.5,
+        "debris_velocity_y": 0.6000000238418579,
+        "debris_velocity_z": 0.699999988079071,
+        "debris_diameter": 0.4000000059604645,
+        "time_of_detection": 1234567890,
+        "object_count": 1
     }
 ]

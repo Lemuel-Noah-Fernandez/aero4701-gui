@@ -40,6 +40,16 @@ class DataDisplay(FloatLayout):
         self.wod_table_layout.pos_hint = {'x': 0, 'top': 0.35}
         self.add_widget(self.wod_table_layout)
 
+        # Create a label for the Misc Data message
+        self.misc_message_label = Label(text="Misc Data Message", size_hint=(None, None), size=(800, 30))
+        self.misc_message_label.pos_hint = {'x': 0.2, 'top': 0.45}
+        self.add_widget(self.misc_message_label)
+
+        # Create a label for displaying the actual Misc Data message
+        self.misc_message_display = Label(text="", size_hint=(None, None), size=(800, 30))
+        self.misc_message_display.pos_hint = {'x': 0.2, 'top': 0.4}
+        self.add_widget(self.misc_message_display)
+
         # Schedule the update method to be called every 5 seconds
         self.update_data(10)
         Clock.schedule_interval(self.update_data, 5)
@@ -52,7 +62,7 @@ class DataDisplay(FloatLayout):
             'misc_data.json': None
         }
 
-        data_dir = '../data'
+        data_dir = '..//data'
         for file_name in data_files.keys():
             file_path = os.path.join(data_dir, file_name)
             try:
@@ -66,6 +76,7 @@ class DataDisplay(FloatLayout):
         self.display_data(data_files['science_data.json'], 'science')
         self.display_data(data_files['pose_data.json'], 'pose')
         self.display_data(data_files['wod_data.json'], 'wod')
+        self.display_misc_message(data_files['misc_data.json'])
 
     def display_data(self, data, data_type):
         if data_type == 'science':
@@ -91,6 +102,12 @@ class DataDisplay(FloatLayout):
             else:
                 layout.add_widget(Label(text=key))
                 layout.add_widget(Label(text=str(value)))
+
+    def display_misc_message(self, data):
+        if data and 'Data' in data:
+            self.misc_message_display.text = data['Data']
+        else:
+            self.misc_message_display.text = "No data available"
 
 class DataApp(App):
     def build(self):

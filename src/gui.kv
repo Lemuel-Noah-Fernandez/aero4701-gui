@@ -1,13 +1,42 @@
-<Gui>
-   BoxLayout:
-      id:box
-      size_hint_y: .8
-      pos_hint: {"top":1}
-   BoxLayout:
-      size_hint_y: .2
-      TextInput:
-         id:namer
-         multiline: False
-      Button:
-         text: "Save It....."
-         on_release: root.save_it()
+#:kivy 1.0.9
+
+<Gui>:
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1  # White background
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.7
+            BoxLayout:
+                id: science_data_layout
+                orientation: 'vertical'
+                padding: [10, 20]
+                spacing: 5
+                Label:
+                    text: "Science Data"
+                    color: 0, 0, 0, 1  # Black text
+            BoxLayout:
+                id: pose_data_layout
+                orientation: 'vertical'
+                padding: [10, 20]
+                spacing: 5
+                Label:
+                    text: "Pose Data"
+                    color: 0, 0, 0, 1  # Black text
+            BoxLayout:
+                id: misc_data_layout
+                orientation: 'vertical'
+                padding: [10, 20]
+                spacing: 5
+                Label:
+                    text: "Misc Data"
+                    color: 0, 0, 0, 1  # Black text
+        BoxLayout:
+            id: plot_box
+            size_hint_y: 0.5

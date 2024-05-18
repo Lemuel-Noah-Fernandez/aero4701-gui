@@ -1,0 +1,35 @@
+#:kivy 1.0.9
+
+<Gui>:
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.7
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: "Science Data"
+                Label:
+                    text: "Data 1"
+                Label:
+                    text: "Data 2"
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: "Pose Data"
+                Label:
+                    text: "Data 3"
+                Label:
+                    text: "Data 4"
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: "Misc Data"
+                Label:
+                    text: "Data 5"
+                Label:
+                    text: "Data 6"
+        BoxLayout:
+            id: plot_box
+            size_hint_y: 0.3

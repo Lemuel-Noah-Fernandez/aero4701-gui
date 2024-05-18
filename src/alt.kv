@@ -1,0 +1,24 @@
+<Gui>:
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.7
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: "Science Data"
+                # Add more widgets for science data
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: "Pose Data"
+                # Add more widgets for pose data
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: "Misc Data"
+                # Add more widgets for misc data
+        BoxLayout:
+            id: plot_box
+            size_hint_y: 0.3

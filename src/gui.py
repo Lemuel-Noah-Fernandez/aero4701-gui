@@ -1,117 +1,36 @@
-import json
-import os
-from kivy.app import App
-from kivy.uix.label import Label
-from kivy.uix.gridlayout import GridLayout
-from kivy.clock import Clock
+from kivy.lang import Builder
+from kivymd.app import MDApp
 from kivy.uix.floatlayout import FloatLayout
+from kivy_garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
+import matplotlib.pyplot as plt
 
-class DataDisplay(FloatLayout):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+#define what we want to graph
+x=[11,22,33,44,55,66,77,88,99,100]
+y=[12,6,9,15,23,67,11,90,34,91]
 
-        # Create a label for the Science Data table
-        self.science_table_label = Label(text="Science Data", size_hint=(None, None), size=(400, 30))
-        self.science_table_label.pos_hint = {'x': 0, 'top': 1}
-        self.add_widget(self.science_table_label)
+plt.plot(x,y)
+plt.ylabel("Y axis")
+plt.xlabel("X axis")
 
-        # Create a layout for the Science Data table
-        self.science_table_layout = GridLayout(cols=2, size_hint=(None, None), size=(400, 200))
-        self.science_table_layout.pos_hint = {'x': 0, 'top': 0.95}
-        self.add_widget(self.science_table_layout)
+#Build our app
 
-        # Create a label for the Pose Data table
-        self.pose_table_label = Label(text="Pose Data", size_hint=(None, None), size=(400, 30))
-        self.pose_table_label.pos_hint = {'x': 0.5, 'top': 1}
-        self.add_widget(self.pose_table_label)
+class Gui(FloatLayout):
+   def __init__(self,**kwargs):
+      super().__init__(**kwargs)
 
-        # Create a layout for the Pose Data table
-        self.pose_table_layout = GridLayout(cols=2, size_hint=(None, None), size=(400, 200))
-        self.pose_table_layout.pos_hint = {'x': 0.5, 'top': 0.95}
-        self.add_widget(self.pose_table_layout)
+      box=self.ids.box
+      box.add_widget(FigureCanvasKivyAgg(plt.gcf()))
+   
 
-        # Create a label for the WOD Data table
-        self.wod_table_label = Label(text="WOD Data", size_hint=(None, None), size=(400, 30))
-        self.wod_table_label.pos_hint = {'x': 0, 'top': 0.4}
-        self.add_widget(self.wod_table_label)
+   def save_it(self):
+      print("lol")
+      pass
 
-        # Create a layout for the WOD Data table
-        self.wod_table_layout = GridLayout(cols=2, size_hint=(None, None), size=(400, 200))
-        self.wod_table_layout.pos_hint = {'x': 0, 'top': 0.35}
-        self.add_widget(self.wod_table_layout)
+class MainApp(MDApp):
+   def build(self):
+      self.theme_cls.theme_style = "Dark"
+      self.theme_cls.primary_palette="Tan"
+      Builder.load_file('alt.kv')
+      return Gui()
 
-        # Create a label for the Misc Data message
-        self.misc_message_label = Label(text="Misc Data Message", size_hint=(None, None), size=(800, 30))
-        self.misc_message_label.pos_hint = {'x': 0.2, 'top': 0.45}
-        self.add_widget(self.misc_message_label)
-
-        # Create a label for displaying the actual Misc Data message
-        self.misc_message_display = Label(text="", size_hint=(None, None), size=(800, 30))
-        self.misc_message_display.pos_hint = {'x': 0.2, 'top': 0.4}
-        self.add_widget(self.misc_message_display)
-
-        # Schedule the update method to be called every 5 seconds
-        self.update_data(10)
-        Clock.schedule_interval(self.update_data, 5)
-
-    def update_data(self, dt):
-        data_files = {
-            'wod_data.json': None,
-            'pose_data.json': None,
-            'science_data.json': None,
-            'misc_data.json': None
-        }
-
-        data_dir = '..//data'
-        for file_name in data_files.keys():
-            file_path = os.path.join(data_dir, file_name)
-            try:
-                with open(file_path, 'r') as file:
-                    data = json.load(file)
-                    if data:
-                        data_files[file_name] = data[-1]  # Get the last entry
-            except (FileNotFoundError, json.JSONDecodeError):
-                data_files[file_name] = None
-
-        self.display_data(data_files['science_data.json'], 'science')
-        self.display_data(data_files['pose_data.json'], 'pose')
-        self.display_data(data_files['wod_data.json'], 'wod')
-        self.display_misc_message(data_files['misc_data.json'])
-
-    def display_data(self, data, data_type):
-        if data_type == 'science':
-            layout = self.science_table_layout
-        elif data_type == 'pose':
-            layout = self.pose_table_layout
-        elif data_type == 'wod':
-            layout = self.wod_table_layout
-
-        layout.clear_widgets()
-
-        if not data:
-            return
-
-        # Display the data in the table
-        for key, value in data.items():
-            if key == "datasets" and data_type == "wod":
-                if value:
-                    first_dataset = value[0]
-                    for sub_key, sub_value in first_dataset.items():
-                        layout.add_widget(Label(text=sub_key))
-                        layout.add_widget(Label(text=str(sub_value)))
-            else:
-                layout.add_widget(Label(text=key))
-                layout.add_widget(Label(text=str(value)))
-
-    def display_misc_message(self, data):
-        if data and 'Data' in data:
-            self.misc_message_display.text = data['Data']
-        else:
-            self.misc_message_display.text = "No data available"
-
-class DataApp(App):
-    def build(self):
-        return DataDisplay()
-
-if __name__ == '__main__':
-    DataApp().run()
+MainApp().run()

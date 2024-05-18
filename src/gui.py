@@ -22,7 +22,7 @@ class Gui(FloatLayout):
             'pose_data.json': self.ids.pose_data_layout,
             'science_data.json': self.ids.science_data_layout,
             'misc_data.json': self.ids.misc_data_layout,
-            'wod_data.json': None  # For plotting
+            'wod_data.json': None  # For plotting and displaying ID and time
         }
 
         for file_name, layout in data_files.items():
@@ -33,6 +33,7 @@ class Gui(FloatLayout):
                     if data and isinstance(data, list):
                         if file_name == 'wod_data.json':
                             self.plot_data(data[-1])
+                            self.display_wod_info(data[-1])
                         else:
                             self.display_data(layout, data[-1], layout)  # Get the last entry
                     else:
@@ -92,13 +93,22 @@ class Gui(FloatLayout):
         plt.plot(times, temperature_battery, label="Battery Temperature (°C)", marker='o')
 
         plt.title("WOD Data Over Time")
-        plt.xlabel("Datasets")
+        plt.xlabel("Dataset number (0-32)")
         plt.ylabel("Values")
         plt.legend()
         plt.tight_layout()
 
         self.ids.plot_box.clear_widgets()  # Clear previous plot
         self.ids.plot_box.add_widget(FigureCanvasKivyAgg(plt.gcf()))  # Add new plot
+
+    def display_wod_info(self, data):
+        self.ids.wod_info_layout.clear_widgets()
+
+        satellite_id = data.get("satellite_id", "Unknown")
+        time_field = data.get("time_field", "Unknown")
+
+        self.ids.wod_info_layout.add_widget(Label(text=f"Satellite ID: {satellite_id}\n", color=(0, 0, 0, 1), font_size='30sp'))
+        self.ids.wod_info_layout.add_widget(Label(text=f"Time: {time_field}", color=(0, 0, 0, 1), font_size='30sp'))
 
 class MainApp(MDApp):
     def build(self):

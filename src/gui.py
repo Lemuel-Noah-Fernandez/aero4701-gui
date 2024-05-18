@@ -8,14 +8,6 @@ from kivy.clock import Clock
 from kivy_garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 import matplotlib.pyplot as plt
 
-# Define what we want to graph
-x = [11, 22, 33, 44, 55, 66, 77, 88, 99, 100]
-y = [12, 6, 9, 15, 23, 67, 11, 90, 34, 91]
-
-plt.plot(x, y)
-plt.ylabel("Y axis")
-plt.xlabel("X axis")
-
 class Gui(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -29,7 +21,8 @@ class Gui(FloatLayout):
         data_files = {
             'pose_data.json': self.ids.pose_data_layout,
             'science_data.json': self.ids.science_data_layout,
-            'misc_data.json': self.ids.misc_data_layout
+            'misc_data.json': self.ids.misc_data_layout,
+            'wod_data.json': None  # For plotting
         }
 
         for file_name, layout in data_files.items():
@@ -37,12 +30,18 @@ class Gui(FloatLayout):
             try:
                 with open(file_path, 'r') as file:
                     data = json.load(file)
-                    if data:
-                        self.display_data(layout, data[-1], layout)  # Get the last entry
+                    if data and isinstance(data, list):
+                        if file_name == 'wod_data.json':
+                            self.plot_data(data[-1])
+                        else:
+                            self.display_data(layout, data[-1], layout)  # Get the last entry
                     else:
-                        self.display_data(layout, None, layout)
-            except (FileNotFoundError, json.JSONDecodeError):
-                self.display_data(layout, None, layout)
+                        if file_name != 'wod_data.json':
+                            self.display_data(layout, None, layout)
+            except (FileNotFoundError, json.JSONDecodeError) as e:
+                if file_name != 'wod_data.json':
+                    self.display_data(layout, None, layout)
+                print(f"Error reading {file_name}: {e}")
 
     def display_data(self, layout, data, title):
         layout.clear_widgets()
@@ -62,9 +61,48 @@ class Gui(FloatLayout):
         for key, value in data.items():
             layout.add_widget(Label(text=f"{key}: {value}", color=(0, 0, 0, 1)))
 
+    def plot_data(self, data):
+        if not data:
+            print("No WOD data available for plotting")
+            return
+
+        datasets = data.get("datasets", [])
+        if not datasets:
+            print("No datasets available for plotting")
+            return
+
+        times = range(len(datasets))
+
+        # Extract values
+        battery_voltages = [dataset["battery_voltage"] for dataset in datasets]
+        battery_currents = [dataset["battery_current"] for dataset in datasets]
+        bus_current_3v3 = [dataset["regulated_bus_current_3v3"] for dataset in datasets]
+        bus_current_5v = [dataset["regulated_bus_current_5v"] for dataset in datasets]
+        temperature_comm = [dataset["temperature_comm"] for dataset in datasets]
+        temperature_eps = [dataset["temperature_eps"] for dataset in datasets]
+        temperature_battery = [dataset["temperature_battery"] for dataset in datasets]
+
+        plt.clf()  # Clear the current figure
+        plt.plot(times, battery_voltages, label="Battery Voltage (V)", marker='o')
+        plt.plot(times, battery_currents, label="Battery Current (A)", marker='o')
+        plt.plot(times, bus_current_3v3, label="3.3V Bus Current (A)", marker='o')
+        plt.plot(times, bus_current_5v, label="5V Bus Current (A)", marker='o')
+        plt.plot(times, temperature_comm, label="Comm Temperature (°C)", marker='o')
+        plt.plot(times, temperature_eps, label="EPS Temperature (°C)", marker='o')
+        plt.plot(times, temperature_battery, label="Battery Temperature (°C)", marker='o')
+
+        plt.title("WOD Data Over Time")
+        plt.xlabel("Datasets")
+        plt.ylabel("Values")
+        plt.legend()
+        plt.tight_layout()
+
+        self.ids.plot_box.clear_widgets()  # Clear previous plot
+        self.ids.plot_box.add_widget(FigureCanvasKivyAgg(plt.gcf()))  # Add new plot
+
 class MainApp(MDApp):
     def build(self):
-        self.theme_cls.theme_style = "Light"  
+        self.theme_cls.theme_style = "Light"
         self.theme_cls.primary_palette = "Beige"
         Builder.load_file('gui.kv')
         return Gui()

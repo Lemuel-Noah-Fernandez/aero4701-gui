@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 class Gui(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        Clock.schedule_interval(self.update_data, 1)
+        Clock.schedule_interval(self.update_data, 0.5)
 
     def on_kv_post(self, base_widget):
         self.ids.plot_box.add_widget(FigureCanvasKivyAgg(plt.gcf()))
@@ -102,11 +102,19 @@ class Gui(FloatLayout):
         self.ids.plot_box.add_widget(FigureCanvasKivyAgg(plt.gcf()))  # Add new plot
 
     def display_wod_info(self, data):
+        # Clear layout for wod_info
         self.ids.wod_info_layout.clear_widgets()
 
+        # Fixes error when wod has not come in yet
+        if data is None:
+            self.ids.wod_info_layout.add_widget(Label(text="No data available", color=(0, 0, 0, 1), font_size='30sp'))
+            return
+
+        # Display satellite id and time
         satellite_id = data.get("satellite_id", "Unknown")
         time_field = data.get("time_field", "Unknown")
 
+        # Add text
         self.ids.wod_info_layout.add_widget(Label(text=f"Satellite ID: {satellite_id}\n", color=(0, 0, 0, 1), font_size='30sp'))
         self.ids.wod_info_layout.add_widget(Label(text=f"Time: {time_field}", color=(0, 0, 0, 1), font_size='30sp'))
 

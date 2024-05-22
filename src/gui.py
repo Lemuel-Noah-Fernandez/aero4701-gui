@@ -12,9 +12,11 @@ class Gui(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Clock.schedule_interval(self.update_data, 0.5)
+        self.fig, self.ax1 = plt.subplots()
+        self.canvas = FigureCanvasKivyAgg(self.fig)
 
     def on_kv_post(self, base_widget):
-        self.ids.plot_box.add_widget(FigureCanvasKivyAgg(plt.gcf()))
+        self.ids.plot_box.add_widget(self.canvas)
 
     def update_data(self, dt):
         data_dir = '../data'
@@ -83,23 +85,39 @@ class Gui(FloatLayout):
         temperature_eps = [dataset["temperature_eps"] for dataset in datasets]
         temperature_battery = [dataset["temperature_battery"] for dataset in datasets]
 
-        plt.clf()  # Clear the current figure
-        plt.plot(times, battery_voltages, label="Battery Voltage (V)", marker='o')
-        plt.plot(times, battery_currents, label="Battery Current (A)", marker='o')
-        plt.plot(times, bus_current_3v3, label="3.3V Bus Current (A)", marker='o')
-        plt.plot(times, bus_current_5v, label="5V Bus Current (A)", marker='o')
-        plt.plot(times, temperature_comm, label="Comm Temperature (°C)", marker='o')
-        plt.plot(times, temperature_eps, label="EPS Temperature (°C)", marker='o')
-        plt.plot(times, temperature_battery, label="Battery Temperature (°C)", marker='o')
+        # Clear previous plot
+        self.ax1.clear()
 
-        plt.title("WOD Data Over Time")
-        plt.xlabel("Dataset number (0-32)")
-        plt.ylabel("Values")
-        plt.legend()
-        plt.tight_layout()
+        # Plot temperature
+        self.ax1.plot(times, temperature_comm, 'r-', label="Comm Temperature (°C)", marker='o')
+        self.ax1.plot(times, temperature_eps, 'r--', label="EPS Temperature (°C)", marker='o')
+        self.ax1.plot(times, temperature_battery, 'r-.', label="Battery Temperature (°C)", marker='o')
+        self.ax1.set_xlabel('Time (s)')
+        self.ax1.set_ylabel('Temperature (°C)', color='r')
+        self.ax1.tick_params('y', colors='r')
 
-        self.ids.plot_box.clear_widgets()  # Clear previous plot
-        self.ids.plot_box.add_widget(FigureCanvasKivyAgg(plt.gcf()))  # Add new plot
+        # Create a second y-axis for voltage
+        ax2 = self.ax1.twinx()
+        ax2.plot(times, battery_voltages, 'b-', label="Battery Voltage (V)", marker='o')
+        ax2.set_ylabel('Voltage (V)', color='b')
+        ax2.tick_params('y', colors='b')
+
+        # Create a third y-axis for current
+        ax3 = self.ax1.twinx()
+        ax3.spines['right'].set_position(('outward', 60))  # Offset the third axis
+        ax3.plot(times, battery_currents, 'g-', label="Battery Current (A)", marker='o')
+        ax3.plot(times, bus_current_3v3, 'g--', label="3.3V Bus Current (A)", marker='o')
+        ax3.plot(times, bus_current_5v, 'g-.', label="5V Bus Current (A)", marker='o')
+        ax3.set_ylabel('Current (A)', color='g')
+        ax3.tick_params('y', colors='g')
+
+        # Add legends for clarity
+        self.ax1.legend(loc='upper left')
+        ax2.legend(loc='upper center')
+        ax3.legend(loc='upper right')
+
+        plt.title('Temperature, Voltage, and Current Over Time')
+        self.canvas.draw()
 
     def display_wod_info(self, data):
         # Clear layout for wod_info

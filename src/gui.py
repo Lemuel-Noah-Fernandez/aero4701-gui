@@ -12,11 +12,9 @@ class Gui(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Clock.schedule_interval(self.update_data, 0.5)
-        self.fig, self.ax1 = plt.subplots()
-        self.canvas = FigureCanvasKivyAgg(self.fig)
 
     def on_kv_post(self, base_widget):
-        self.ids.plot_box.add_widget(self.canvas)
+        self.ids.plot_box.add_widget(FigureCanvasKivyAgg(plt.gcf()))
 
     def update_data(self, dt):
         data_dir = '../data'
@@ -85,39 +83,38 @@ class Gui(FloatLayout):
         temperature_eps = [dataset["temperature_eps"] for dataset in datasets]
         temperature_battery = [dataset["temperature_battery"] for dataset in datasets]
 
-        # Clear previous plot
-        self.ax1.clear()
+        plt.clf()  # Clear the current figure
 
-        # Plot temperature
-        self.ax1.plot(times, temperature_comm, 'r-', label="Comm Temperature (°C)", marker='o')
-        self.ax1.plot(times, temperature_eps, 'r--', label="EPS Temperature (°C)", marker='o')
-        self.ax1.plot(times, temperature_battery, 'r-.', label="Battery Temperature (°C)", marker='o')
-        self.ax1.set_xlabel('Time (s)')
-        self.ax1.set_ylabel('Temperature (°C)', color='r')
-        self.ax1.tick_params('y', colors='r')
+        # Create subplots
+        fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 12), sharex=True)
 
-        # Create a second y-axis for voltage
-        ax2 = self.ax1.twinx()
-        ax2.plot(times, battery_voltages, 'b-', label="Battery Voltage (V)", marker='o')
-        ax2.set_ylabel('Voltage (V)', color='b')
-        ax2.tick_params('y', colors='b')
+        # Upper plot for temperatures
+        ax1.plot(times, temperature_comm, label="Comm Temperature (°C)", marker='o')
+        ax1.plot(times, temperature_eps, label="EPS Temperature (°C)", marker='o')
+        ax1.plot(times, temperature_battery, label="Battery Temperature (°C)", marker='o')
+        # ax1.set_title("WOD plotting")
+        ax1.set_ylabel("Temperature (°C)")
+        ax1.legend()
 
-        # Create a third y-axis for current
-        ax3 = self.ax1.twinx()
-        ax3.spines['right'].set_position(('outward', 60))  # Offset the third axis
-        ax3.plot(times, battery_currents, 'g-', label="Battery Current (A)", marker='o')
-        ax3.plot(times, bus_current_3v3, 'g--', label="3.3V Bus Current (A)", marker='o')
-        ax3.plot(times, bus_current_5v, 'g-.', label="5V Bus Current (A)", marker='o')
-        ax3.set_ylabel('Current (A)', color='g')
-        ax3.tick_params('y', colors='g')
+        # Middle plot for battery voltage
+        ax2.plot(times, battery_voltages, label="Battery Voltage (V)", marker='o')
+        # ax2.set_title("Battery Voltage Over Time")
+        ax2.set_ylabel("Voltage (V)")
+        ax2.legend()
 
-        # Add legends for clarity
-        self.ax1.legend(loc='upper left')
-        ax2.legend(loc='upper center')
-        ax3.legend(loc='upper right')
+        # Lower plot for currents
+        ax3.plot(times, battery_currents, label="Battery Current (A)", marker='o')
+        ax3.plot(times, bus_current_3v3, label="3.3V Bus Current (A)", marker='o')
+        ax3.plot(times, bus_current_5v, label="5V Bus Current (A)", marker='o')
+        # ax3.set_title("Current Data Over Time")
+        ax3.set_xlabel("Dataset number (0-32)")
+        ax3.set_ylabel("Current (A)")
+        ax3.legend()
 
-        plt.title('Temperature, Voltage, and Current Over Time')
-        self.canvas.draw()
+        plt.tight_layout()
+
+        self.ids.plot_box.clear_widgets()  # Clear previous plot
+        self.ids.plot_box.add_widget(FigureCanvasKivyAgg(plt.gcf()))  # Add new plot
 
     def display_wod_info(self, data):
         # Clear layout for wod_info
@@ -125,16 +122,21 @@ class Gui(FloatLayout):
 
         # Fixes error when wod has not come in yet
         if data is None:
-            self.ids.wod_info_layout.add_widget(Label(text="No data available", color=(0, 0, 0, 1), font_size='30sp'))
+            self.ids.wod_info_layout.add_widget(Label(text="No data available", color=(0, 0, 0, 1), font_size='25sp'))
             return
 
         # Display satellite id and time
         satellite_id = data.get("satellite_id", "Unknown")
         time_field = data.get("time_field", "Unknown")
 
+        # Get the last dataset's satellite_mode
+        datasets = data.get("datasets", [])
+        satellite_mode = datasets[-1].get("satellite_mode", "Unknown") if datasets else "Unknown"
+
         # Add text
-        self.ids.wod_info_layout.add_widget(Label(text=f"Satellite ID: {satellite_id}\n", color=(0, 0, 0, 1), font_size='30sp'))
-        self.ids.wod_info_layout.add_widget(Label(text=f"Time: {time_field}", color=(0, 0, 0, 1), font_size='30sp'))
+        self.ids.wod_info_layout.add_widget(Label(text=f"Satellite ID: {satellite_id}", color=(0, 0, 0, 1), font_size='20sp'))
+        self.ids.wod_info_layout.add_widget(Label(text=f"Time: {time_field}", color=(0, 0, 0, 1), font_size='20sp'))
+        self.ids.wod_info_layout.add_widget(Label(text=f"Satellite Mode: {satellite_mode}", color=(0, 0, 0, 1), font_size='20sp'))
 
 class MainApp(MDApp):
     def build(self):

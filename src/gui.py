@@ -131,7 +131,7 @@ class Gui(FloatLayout):
 
         # Get the last dataset's satellite_mode
         datasets = data.get("datasets", [])
-        satellite_mode = datasets[-1].get("satellite_mode", "Unknown") if datasets else "Unknown"
+        satellite_mode = datasets[0].get("satellite_mode", "Unknown") if datasets else "Unknown"
 
         # Add text
         self.ids.wod_info_layout.add_widget(Label(text=f"Satellite ID: {satellite_id}", color=(0, 0, 0, 1), font_size='20sp'))

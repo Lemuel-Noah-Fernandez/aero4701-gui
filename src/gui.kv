@@ -51,31 +51,33 @@
                     padding: [10, 10]
                     spacing: 5
 
-            BoxLayout:
-                orientation: 'vertical'
+            GridLayout:
+                cols: 2
+                rows: 2
                 padding: [10, 10]
                 spacing: 10
 
                 BoxLayout:
-                    id: misc_data_layout
+                    id: lidar1
                     orientation: 'vertical'
                     padding: [10, 10]
                     spacing: 5
-                    Label:
-                        text: "Misc Data"
-                        color: 0, 0, 0, 1  # Black text
-                        font_size: '20sp'
-                        bold: True
-                    GridLayout:
-                        cols: 1
-                        id: misc_data_labels
-                        padding: [10, 10]
-                        spacing: 5
 
                 BoxLayout:
-                    id: wod_info_layout
+                    id: lidar2
                     orientation: 'vertical'
-                    size_hint_y: 0.2
+                    padding: [10, 10]
+                    spacing: 5
+
+                BoxLayout:
+                    id: lidar3
+                    orientation: 'vertical'
+                    padding: [10, 10]
+                    spacing: 5
+
+                BoxLayout:
+                    id: lidar4
+                    orientation: 'vertical'
                     padding: [10, 10]
                     spacing: 5
 

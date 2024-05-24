@@ -22,15 +22,15 @@ class Gui(FloatLayout):
         data_files = {
             'pose_data.json': self.ids.pose_data_layout,
             'science_data.json': self.ids.science_data_layout,
-            'debris_found_data.json': None,  # For plotting
-            'raw_lidar_data.json': None,  # For plotting
-            'wod_data.json': None  # For plotting and displaying ID and time
+            'debris_found_data.json': None,
+            'raw_lidar_data.json': None,
+            'wod_data.json': None
         }
 
-        lidar_data = None
-        debris_data = None
+        lidar_data = {1: None, 2: None, 3: None, 4: None}
+        debris_data = {1: None, 2: None, 3: None, 4: None}
 
-        for file_name, layout in data_files.items():
+        for file_name in data_files.keys():
             file_path = os.path.join(data_dir, file_name)
             try:
                 with open(file_path, 'r') as file:
@@ -40,21 +40,26 @@ class Gui(FloatLayout):
                             self.plot_data(data[-1])
                             self.display_wod_info(data[-1])
                         elif file_name == 'debris_found_data.json':
-                            debris_data = data
+                            for item in data:
+                                label = item['lidar_label']
+                                debris_data[label] = item
                         elif file_name == 'raw_lidar_data.json':
-                            lidar_data = data
+                            for item in data:
+                                label = item['lidar_num']
+                                lidar_data[label] = item
                         else:
-                            self.display_data(layout, data[-1], layout)  # Get the last entry
+                            self.display_data(data_files[file_name], data[-1], data_files[file_name])
                     else:
-                        if file_name != 'wod_data.json' and file_name != 'debris_found_data.json' and file_name != 'raw_lidar_data.json':
-                            self.display_data(layout, None, layout)
+                        if file_name not in ['wod_data.json', 'debris_found_data.json', 'raw_lidar_data.json']:
+                            self.display_data(data_files[file_name], None, data_files[file_name])
             except (FileNotFoundError, json.JSONDecodeError) as e:
-                if file_name != 'wod_data.json' and file_name != 'debris_found_data.json' and file_name != 'raw_lidar_data.json':
-                    self.display_data(layout, None, layout)
+                if file_name not in ['wod_data.json', 'debris_found_data.json', 'raw_lidar_data.json']:
+                    self.display_data(data_files[file_name], None, data_files[file_name])
                 print(f"Error reading {file_name}: {e}")
 
-        if lidar_data and debris_data:
-            self.plot_lidar_and_debris_data(lidar_data[-1], debris_data)
+        for label in [1, 2, 3, 4]:
+            if lidar_data[label] and debris_data[label]:
+                self.plot_lidar_and_debris_data(lidar_data[label], debris_data[label], label)
 
     def display_data(self, layout, data, title):
         layout.clear_widgets()
@@ -64,7 +69,7 @@ class Gui(FloatLayout):
         elif title == self.ids.science_data_layout:
             layout.add_widget(Label(text="Science Data", color=(0, 0, 0, 1), font_size='35sp'))
         elif title == self.ids.misc_data_layout:
-            return  # Skip for misc_data_layout
+            return
 
         if not data:
             layout.add_widget(Label(text="No data available", color=(0, 0, 0, 1)))
@@ -119,27 +124,25 @@ class Gui(FloatLayout):
         self.ids.plot_box.clear_widgets()  # Clear previous plot
         self.ids.plot_box.add_widget(FigureCanvasKivyAgg(plt.gcf()))  # Add new plot
 
-    def plot_lidar_and_debris_data(self, lidar_data, debris_data):
+    def plot_lidar_and_debris_data(self, lidar_data, debris_data, label):
         if not lidar_data or not debris_data:
             print("Insufficient data for plotting lidar and debris data")
             return
 
-        # Example plotting of lidar distances
         lidar_distances = np.array(lidar_data["distances"]).reshape(8, 8)
-        blob_positions = np.array([item["blob_position"] for item in debris_data])
+        blob_positions = np.array([debris_data["blob_position"]])
 
-        plt.clf()  # Clear the current figure
+        fig, ax = plt.subplots()
+        ax.imshow(lidar_distances, cmap='viridis', interpolation='nearest')
+        ax.scatter(blob_positions[:, 1], blob_positions[:, 0], marker='x', color='r')
+        ax.set_xlabel('Column')
+        ax.set_ylabel('Row')
+        ax.set_title(f'Lidar {label}')
+        fig.colorbar(ax.imshow(lidar_distances, cmap='viridis', interpolation='nearest'), label='Value')
 
-        plt.figure()
-        plt.imshow(lidar_distances, cmap='viridis', interpolation='nearest')
-        plt.colorbar(label='Value')
-        plt.scatter(blob_positions[:, 1], blob_positions[:, 0], marker='x', color='r')
-        plt.xlabel('Column')
-        plt.ylabel('Row')
-        plt.title('2D Plot of Lidar and Debris Data')
-
-        self.ids.misc_data_layout.clear_widgets()  # Clear previous plot
-        self.ids.misc_data_layout.add_widget(FigureCanvasKivyAgg(plt.gcf()))  # Add new plot
+        lidar_layout_id = f'lidar{label}'
+        self.ids[lidar_layout_id].clear_widgets()  # Clear previous plot
+        self.ids[lidar_layout_id].add_widget(FigureCanvasKivyAgg(fig))  # Add new plot
 
     def display_wod_info(self, data):
         self.ids.wod_info_layout.clear_widgets()
